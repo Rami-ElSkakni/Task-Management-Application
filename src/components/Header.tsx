@@ -2,17 +2,23 @@
 
 import { Modal, Box, Typography } from "@mui/material";
 import React, {useState} from "react";
-import { useQuery, useMutation } from "react-query";
+import { useMutation } from "react-query";
 import {getAllTasks, addTask} from '../../api/TaskAPI';
+//import { setTodos, addTodo, deleteTodo } from '../redux/features/todoSlice';
+import { RootState } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo } from '../redux/features/todoSlice';
 function Header() {
 
   const [open, setOpen] = useState(false);
   const [task, setTask] = useState();
   const [details, setDetails] = useState();
   const [date, setDate] = useState();
+  const todos = useSelector((state: RootState) => state.todos);
+  const dispatch = useDispatch();
+  //console.log(todos)
 
-  const {data, refetch, isFetching} = useQuery(['alltasks'], getAllTasks, {onSuccess: (data) => console.log(data)})
-  const {mutate} = useMutation(['alltasks'], addTask)
+  const {mutate} = useMutation(['alltasks'], addTask, {onSuccess: () => console.log("success")})
 
   //console.log(data)
 
@@ -30,18 +36,13 @@ function Header() {
   const formHandler =  (e: any) => {
     e.preventDefault();
     setOpen(false)
-
-    console.log({
-      task,
-      details,
-      date
-    });
-
-   mutate({title: task, description: details, dueDate: date});
-
+    mutate({title: task, description: details, dueDate: date});
+    dispatch(addTodo({title: task, description: details, dueDate: date}));
   }
 
+
   return (
+    <div>
     <div className="flex justify-between py-1  mt-3">
       <div>Task Management</div>
       <button className="font-bold" onClick={handleOpen}>
@@ -66,6 +67,9 @@ function Header() {
           </form>
         </div>
       </Modal>
+    </div>
+
+      
     </div>
   );
 }
