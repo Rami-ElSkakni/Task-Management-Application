@@ -3,7 +3,7 @@
 import React from "react";
 import { QueryClientProvider, QueryClient } from "react-query";
 
-function Providers({ children }: React.PropsWithChildren) {
+function ProvidersUtil({ children }: React.PropsWithChildren) {
   const [client] = React.useState(
     new QueryClient({ defaultOptions: { queries: { staleTime: 5000 } } })
   );
@@ -15,4 +15,4 @@ function Providers({ children }: React.PropsWithChildren) {
   );
 }
 
-export default Providers;
+export default ProvidersUtil;
