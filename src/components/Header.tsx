@@ -16,11 +16,9 @@ function Header() {
   const [date, setDate] = useState();
   const todos = useSelector((state: RootState) => state.todos);
   const dispatch = useDispatch();
-  //console.log(todos)
 
-  const {mutate} = useMutation(['alltasks'], addTask, {onSuccess: () => console.log("success")})
+  const {mutateAsync} = useMutation(['alltasks'], addTask)
 
-  //console.log(data)
 
   const handleOpen = () => {
     setOpen(true);
@@ -33,11 +31,14 @@ function Header() {
     setTask(e.target.value);
   }
 
-  const formHandler =  (e: any) => {
+  const formHandler =  async (e: any) => {
     e.preventDefault();
     setOpen(false)
-    mutate({title: task, description: details, dueDate: date});
-    dispatch(addTodo({title: task, description: details, dueDate: date}));
+    const res = await mutateAsync({title: task, description: details, dueDate: date});
+    dispatch(addTodo({id: res._id, title: task, description: details, dueDate: date}));
+    setTask(undefined);
+    setDetails(undefined);
+    setDate(undefined);
   }
 
 

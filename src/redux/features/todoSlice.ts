@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Todo {
   title: string;
-  //id: string,
+  id: string,
   description: string;
   dueDate: Date
 }
@@ -19,7 +19,7 @@ const todosSlice = createSlice({
       state.push(action.payload);
     },
     deleteTodo: (state, action: PayloadAction<number>) => {
-      return state.filter((todo) => +todo.id !== action.payload);
+      return state.filter((todo) => {return todo._id !== action.payload});
     },
   },
 });
