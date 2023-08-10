@@ -20,8 +20,6 @@ function Task() {
     return <div>Loading...</div>;
   }
 
-  console.log(data)
-
   return (
     <>
       {todos.map((d) => {

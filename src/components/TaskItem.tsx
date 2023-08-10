@@ -6,6 +6,8 @@ import { deleteTodo, editTodo } from "../redux/features/todoSlice";
 import { Modal, Skeleton } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Field, Form, Formik, ErrorMessage } from "formik";
+import * as Yup from "yup";
 function TaskItem({ task, desc, date, id }) {
   const [open, setOpen] = useState(false);
   const [updatedTask, setTask] = useState();
@@ -19,7 +21,7 @@ function TaskItem({ task, desc, date, id }) {
     onSuccess: () => dispatch(deleteTodo(id.toString())),
   });
   const { mutate: editMutate, isLoading } = useMutation(["editTask"], editTask, {
-    onSuccess: () => dispatch(editTodo({_id: id, title: updatedTask, description: details, dueDate: Updateddate})),
+    //onSuccess: () => dispatch(editTodo({_id: id, title: updatedTask, description: details, dueDate: Updateddate})),
   });
 
 
@@ -34,16 +36,22 @@ function TaskItem({ task, desc, date, id }) {
     setTask(e.target.value);
   }
 
-  const formHandler =  async (e: any) => {
-    e.preventDefault();
-    setOpen(false)
-    console.log(updatedTask, details, Updateddate)
+  const validationSchema = Yup.object({
+    updatedTask: Yup.string().required("Task is required"),
+    details: Yup.string().required("Details are required"),
+    Updateddate: Yup.date().required("Date is required"),
+  });
+
+  const formHandler =  async ({updatedTask, details, Updateddate}) => {
+    setOpen(false);
+    setTask(updatedTask);
+    setDate(Updateddate);
+    setDetails(details)
     editMutate({_id: id, title: updatedTask, description: details, dueDate: Updateddate})
+
     //const res = await mutateAsync({title: task, description: details, dueDate: date});
-    
-    setTask(undefined);
-    setDetails(undefined);
-    setDate(undefined);
+    dispatch(editTodo({_id: id, title: updatedTask, description: details, dueDate: Updateddate}))
+
   }
 
 
@@ -78,12 +86,53 @@ function TaskItem({ task, desc, date, id }) {
       >
         <div className="bg-white text-center w-2/5 max-w-sm m-auto mt-20 rounded-lg py-4">
           <h2 className="text-xl">Edit task</h2>
-          <form className="flex flex-col w-4/5 m-auto gap-4">
-          <input onChange={taskHandler} className="border-2 py-2 px-1 rounded" type="text" placeholder="Task"></input>
-          <input onChange={(e: any) => setDetails(e.target.value)} className="border-2 py-2 px-1 rounded" type="text" placeholder="Details"></input>
-          <input onChange={(e: any) => setDate(e.target.value)} className="border-2 py-2 px-1 rounded" type="date" placeholder="Pick a date"></input>
-          <button onClick={formHandler} className="bg-fuchsia-600 rounded text-white py-3">Update Task</button>
-          </form>
+          <Formik
+            initialValues={{
+              updatedTask: "",
+              details: "",
+              Updateddate: "",
+            }}
+            onSubmit={formHandler}
+            validationSchema={validationSchema}
+          >
+            {({ isSubmitting }) => (
+              <Form className="flex flex-col w-4/5 m-auto gap-4">
+                <Field
+                  name="updatedTask"
+                  className="border-2 py-2 px-1 rounded"
+                  type="text"
+                  placeholder="Task"
+                />
+                <ErrorMessage name="updatedTask" component="div" className="text-red-500 text-left" />
+
+                <Field
+                  name="details"
+                  className="border-2 py-2 px-1 rounded"
+                  type="text"
+                  placeholder="Details"
+                />
+                <ErrorMessage name="details" component="div" className="text-red-500 text-left" />
+
+                <Field
+                  name="Updateddate"
+                  className="border-2 py-2 px-1 rounded"
+                  type="date"
+                  placeholder="Pick a date"
+                />
+                <ErrorMessage name="Updateddate" component="div" className="text-red-500 text-left" />
+
+                <button
+                  type="submit"
+                  className={`bg-fuchsia-600 rounded text-white py-3 ${
+                    isSubmitting && 'opacity-50 cursor-not-allowed'
+                  }`}
+                  disabled={isSubmitting}
+                >
+                    Edit
+                </button>
+              </Form>
+            )}
+          </Formik>
         </div>
       </Modal>
     </div>

@@ -25,7 +25,6 @@ const deleteTask = async (id) => {
   try {
     const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/${id}`);
 
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -40,10 +39,8 @@ const editTask = async (details) => {
       description: details.description,
       dueDate: details.dueDate
     }
-    console.log("in edit task",details)
     const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/${details._id}`, body);
 
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.log(err);
