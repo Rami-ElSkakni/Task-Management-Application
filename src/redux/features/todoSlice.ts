@@ -1,15 +1,16 @@
 // redux/slices/todosSlice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Todo {
   title: string;
-  id: string,
+  id: string;
   description: string;
-  dueDate: Date
+  dueDate: Date;
+  completed: boolean;
 }
 
 const todosSlice = createSlice({
-  name: 'todos',
+  name: "todos",
   initialState: [] as Todo[],
   reducers: {
     setTodos: (state, action: PayloadAction<Todo[]>) => {
@@ -19,17 +20,26 @@ const todosSlice = createSlice({
       state.push(action.payload);
     },
     deleteTodo: (state, action: PayloadAction<number>) => {
-      return state.filter((todo) => {return todo._id !== action.payload});
+      return state.filter((todo) => {
+        return todo._id !== action.payload;
+      });
     },
     editTodo: (state, action: PayloadAction<Todo>) => {
-        const updatedTodo = action.payload;
-        const index = state.findIndex(todo => todo._id === updatedTodo._id);
-        if (index !== -1) {
-          state[index] = updatedTodo;
-        }
-      },
+      const updatedTodo = action.payload;
+      const index = state.findIndex((todo) => todo._id === updatedTodo._id);
+      if (index !== -1) {
+        state[index] = updatedTodo;
+      }
+    },
+    completeTodo: (state, action: PayloadAction<string>) => {
+      const obj = action.payload;
+      const todo = state.find((todo) => {console.log(todo._id, obj._id); return todo._id === obj._id});
+      if (todo) {
+        todo.completed = true;
+      }
+    },
   },
 });
 
-export const { setTodos, addTodo, deleteTodo, editTodo } = todosSlice.actions;
+export const { setTodos, addTodo, deleteTodo, editTodo, completeTodo } = todosSlice.actions;
 export default todosSlice.reducer;

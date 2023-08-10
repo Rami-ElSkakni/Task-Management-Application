@@ -20,19 +20,43 @@ function Task() {
     return <div>Loading...</div>;
   }
 
+
   return (
     <>
-      {todos.map((d) => {
-        return (
-          <TaskItem
-            key={d._id}
-            id={d._id}
-            task={d.title}
-            desc={d.description}
-            date={d.dueDate}
-          />
-        );
-      })}
+      <div>
+        {todos.length == 0 && <div className="text-center my-10">No tasks</div>}
+        {todos.map((d) => {
+          if (!d.completed) {
+            return (
+              <TaskItem
+                key={d._id}
+                id={d._id}
+                task={d.title}
+                desc={d.description}
+                date={d.dueDate}
+              />
+            );
+          }
+        })}
+      </div>
+
+      <div>
+        <h2 className="text-center font-bold text-xl mt-10">Completed Tasks</h2>
+        {todos.map((d) => {
+          if (d.completed) {
+            return (
+              <TaskItem
+                key={d._id}
+                id={d._id}
+                task={d.title}
+                desc={d.description}
+                date={d.dueDate}
+                color='#00AF3A'
+              />
+            );
+          }
+        })}
+      </div>
     </>
   );
 }

@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import { useMutation } from "react-query";
 import { deleteTask, editTask } from "../../api/TaskAPI";
 import { useDispatch } from "react-redux";
-import { deleteTodo, editTodo } from "../redux/features/todoSlice";
+import { deleteTodo, editTodo, completeTodo } from "../redux/features/todoSlice";
 import { Modal, Skeleton } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
-function TaskItem({ task, desc, date, id }) {
+function TaskItem({ task, desc, date, id, color }) {
   const [open, setOpen] = useState(false);
-  const [updatedTask, setTask] = useState();
-  const [details, setDetails] = useState();
-  const [Updateddate, setDate] = useState();
 
   const dispatch = useDispatch();
   const options = { year: "numeric", month: "long", day: "numeric" };
@@ -36,6 +33,10 @@ function TaskItem({ task, desc, date, id }) {
     setTask(e.target.value);
   }
 
+  const completedHandler = () => {
+    dispatch(completeTodo({_id: id}))
+  }
+
   const validationSchema = Yup.object({
     updatedTask: Yup.string().required("Task is required"),
     details: Yup.string().required("Details are required"),
@@ -56,7 +57,7 @@ function TaskItem({ task, desc, date, id }) {
 
 
   return (
-    <div className="mt-8 px-4 py-6 rounded-md bg-indigo-700 text-white">
+    <div className="mt-8 px-4 py-6 rounded-md bg-indigo-700 text-white" style={{backgroundColor: color}}>
       {!isLoading && <div className="text-xs">{task}</div>}
       {isLoading && <Skeleton variant="text" sx={{ bgcolor: 'grey.900', fontSize: '.75rem', width: 0.2 }} />}
       <div className="flex justify-between">
@@ -73,6 +74,11 @@ function TaskItem({ task, desc, date, id }) {
             // className="p-2 w-1 h-1 rounded-full bg-white border-red-500 border-2 cursor-pointer"
           >
             <FontAwesomeIcon icon={faTrash} className="cursor-pointer text-red"/>
+          </div>
+          <div onClick={completedHandler}
+            className="p-2 w-1 h-1 rounded-full bg-white border-red-500 border-2 cursor-pointer"
+          >
+            
           </div>
         </div>}
       </div>
