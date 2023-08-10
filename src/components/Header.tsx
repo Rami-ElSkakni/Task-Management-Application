@@ -1,10 +1,9 @@
 "use client";
 
-import { Modal, Box, Typography } from "@mui/material";
+import { Modal} from "@mui/material";
 import React, { useState } from "react";
 import { useMutation } from "react-query";
-import { getAllTasks, addTask } from "../../api/TaskAPI";
-//import { setTodos, addTodo, deleteTodo } from '../redux/features/todoSlice';
+import { addTask } from "../../api/TaskAPI";
 import { RootState } from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { addTodo } from "../redux/features/todoSlice";
@@ -28,11 +27,14 @@ function Header() {
     setOpen(false);
   };
 
-  const taskHandler = (e: any) => {
-    setTask(e.target.value);
-  };
 
-  const formHandler = async ({task, details, date}) => {
+  interface formProps {
+    task: string,
+    details: string,
+    date: string
+  }
+
+  const formHandler = async ({task, details, date}: formProps) => {
     console.log("header",date);
     const res = await mutateAsync({
       title: task,
@@ -58,12 +60,12 @@ function Header() {
 
   return (
     <div>
-      <div className="flex justify-between py-1  mt-3 border-b-orange-50">
+      <div className="flex justify-between py-1 my-5 border-b-orange-50">
         <div>Task Management</div>
         <button className="font-bold uppercase" onClick={handleOpen}>
           <span className="bg-fuchsia-600 border rounded-full text-white border-none px-2 py-1 mr-1">
             +
-          </span>{" "}
+          </span>
           New Task
         </button>
         <Modal
@@ -80,7 +82,7 @@ function Header() {
                 details: "",
                 date: "",
               }}
-              onSubmit={formHandler} // Pass your form handling function here
+              onSubmit={formHandler}
               validationSchema={validationSchema}
             >
               {({isValid}) => (<Form className="flex flex-col w-4/5 m-auto gap-4">

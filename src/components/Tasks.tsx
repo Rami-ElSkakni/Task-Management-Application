@@ -6,6 +6,7 @@ import TaskItem from "./TaskItem";
 import { RootState } from "../redux/store";
 import { useSelector, useDispatch } from "react-redux";
 import { setTodos } from "../redux/features/todoSlice";
+import { TailSpin } from "react-loader-spinner";
 function Task() {
   const dispatch = useDispatch();
   const todos = useSelector((state: RootState) => state.todos);
@@ -17,9 +18,18 @@ function Task() {
   });
 
   if (isFetching) {
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center flex justify-center mt-4">
+        <TailSpin
+          height="60"
+          width="60"
+          color="#4338CA"
+          ariaLabel="tail-spin-loading"
+          radius="1"
+        />
+      </div>
+    );
   }
-
 
   return (
     <>
@@ -34,7 +44,6 @@ function Task() {
                 task={d.title}
                 desc={d.description}
                 date={d.dueDate}
-                
               />
             );
           }
@@ -42,7 +51,9 @@ function Task() {
       </div>
 
       <div>
-        <h2 className="text-center font-bold text-xl mt-10 uppercase">Completed Tasks</h2>
+        <h2 className="text-center font-bold text-xl mt-10 uppercase">
+          Completed Tasks
+        </h2>
         {todos.map((d) => {
           if (d.completed) {
             return (
@@ -52,7 +63,7 @@ function Task() {
                 task={d.title}
                 desc={d.description}
                 date={d.dueDate}
-                color='#00AF3A'
+                color="#00AF3A"
                 completed={d.completed}
               />
             );

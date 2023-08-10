@@ -33,14 +33,14 @@ const todosSlice = createSlice({
     },
     completeTodo: (state, action: PayloadAction<string>) => {
       const obj = action.payload;
-      const todo = state.find((todo) => {console.log(todo._id, obj._id); return todo._id === obj._id});
+      const todo = state.find((todo) => { return todo._id === obj._id});
       if (todo) {
         todo.completed = true;
       }
     },
     unCompleteTodo: (state, action: PayloadAction<string>) => {
       const obj = action.payload;
-      const todo = state.find((todo) => {console.log(todo._id, obj._id); return todo._id === obj._id});
+      const todo = state.find((todo) => { return todo._id === obj._id});
       if (todo) {
         todo.completed = false;
       }
