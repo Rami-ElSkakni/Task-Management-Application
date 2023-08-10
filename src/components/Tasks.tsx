@@ -34,6 +34,7 @@ function Task() {
                 task={d.title}
                 desc={d.description}
                 date={d.dueDate}
+                
               />
             );
           }
@@ -41,7 +42,7 @@ function Task() {
       </div>
 
       <div>
-        <h2 className="text-center font-bold text-xl mt-10">Completed Tasks</h2>
+        <h2 className="text-center font-bold text-xl mt-10 uppercase">Completed Tasks</h2>
         {todos.map((d) => {
           if (d.completed) {
             return (
@@ -52,6 +53,7 @@ function Task() {
                 desc={d.description}
                 date={d.dueDate}
                 color='#00AF3A'
+                completed={d.completed}
               />
             );
           }

@@ -58,9 +58,9 @@ function Header() {
 
   return (
     <div>
-      <div className="flex justify-between py-1  mt-3">
+      <div className="flex justify-between py-1  mt-3 border-b-orange-50">
         <div>Task Management</div>
-        <button className="font-bold" onClick={handleOpen}>
+        <button className="font-bold uppercase" onClick={handleOpen}>
           <span className="bg-fuchsia-600 border rounded-full text-white border-none px-2 py-1 mr-1">
             +
           </span>{" "}

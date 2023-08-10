@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useMutation } from "react-query";
-import { deleteTask, editTask } from "../../api/TaskAPI";
+import { deleteTask, editTask, markComplete, unmarkComplete } from "../../api/TaskAPI";
 import { useDispatch } from "react-redux";
-import { deleteTodo, editTodo, completeTodo } from "../redux/features/todoSlice";
+import { deleteTodo, editTodo, completeTodo, unCompleteTodo } from "../redux/features/todoSlice";
 import { Modal, Skeleton } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPen, faTrash, faCheck  } from "@fortawesome/free-solid-svg-icons";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
-function TaskItem({ task, desc, date, id, color }) {
+function TaskItem({ task, desc, date, id, color, completed }) {
   const [open, setOpen] = useState(false);
 
   const dispatch = useDispatch();
@@ -18,8 +18,11 @@ function TaskItem({ task, desc, date, id, color }) {
     onSuccess: () => dispatch(deleteTodo(id.toString())),
   });
   const { mutate: editMutate, isLoading } = useMutation(["editTask"], editTask, {
-    //onSuccess: () => dispatch(editTodo({_id: id, title: updatedTask, description: details, dueDate: Updateddate})),
   });
+  const { mutate: completeMutate,  } = useMutation(["markComplete"], markComplete);
+  const { mutate: undoCompleteMutate,  } = useMutation(["undoMark"], unmarkComplete);
+
+
 
 
   const deleteClickHandler = () => {
@@ -34,7 +37,15 @@ function TaskItem({ task, desc, date, id, color }) {
   }
 
   const completedHandler = () => {
-    dispatch(completeTodo({_id: id}))
+    if (completed) {
+        undoCompleteMutate({_id:id});
+        dispatch(unCompleteTodo({_id: id}))
+    }
+    else {
+        completeMutate({_id:id});
+        dispatch(completeTodo({_id: id}))
+    }
+    
   }
 
   const validationSchema = Yup.object({
@@ -45,9 +56,6 @@ function TaskItem({ task, desc, date, id, color }) {
 
   const formHandler =  async ({updatedTask, details, Updateddate}) => {
     setOpen(false);
-    setTask(updatedTask);
-    setDate(Updateddate);
-    setDetails(details)
     editMutate({_id: id, title: updatedTask, description: details, dueDate: Updateddate})
 
     //const res = await mutateAsync({title: task, description: details, dueDate: date});
@@ -71,14 +79,13 @@ function TaskItem({ task, desc, date, id, color }) {
           </div>
           <div
             onClick={deleteClickHandler}
-            // className="p-2 w-1 h-1 rounded-full bg-white border-red-500 border-2 cursor-pointer"
           >
             <FontAwesomeIcon icon={faTrash} className="cursor-pointer text-red"/>
           </div>
           <div onClick={completedHandler}
-            className="p-2 w-1 h-1 rounded-full bg-white border-red-500 border-2 cursor-pointer"
+            className="p-2 w-1 h-1 rounded-full bg-white border-2 cursor-pointer flex items-center justify-center"
           >
-            
+            {completed && <FontAwesomeIcon icon={faCheck} className="text-blue-500" />}
           </div>
         </div>}
       </div>

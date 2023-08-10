@@ -47,7 +47,33 @@ const editTask = async (details) => {
     throw new Error(err);
   }
 };
+const markComplete = async (details) => {
+  try {
+    const body = {
+      completed: true,
+    }
+    const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/${details._id}`, body);
+
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
+  }
+};
+const unmarkComplete = async (details) => {
+  try {
+    const body = {
+      completed: false,
+    }
+    const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/${details._id}`, body);
+
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
+  }
+};
 
  
 
-export { getAllTasks, addTask, deleteTask, editTask };
+export { getAllTasks, addTask, deleteTask, editTask, markComplete, unmarkComplete };
