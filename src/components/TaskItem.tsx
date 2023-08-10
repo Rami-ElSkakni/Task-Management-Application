@@ -1,28 +1,93 @@
-import React from 'react'
+import React, { useState } from "react";
 import { useMutation } from "react-query";
-import { deleteTask } from '../../api/TaskAPI';
-import { useDispatch } from 'react-redux';
-import { deleteTodo } from '../redux/features/todoSlice';
-function TaskItem({task, desc, date, id}) {
-    const dispatch = useDispatch();
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = new Date(date).toLocaleDateString('en-US', options);
-    const {mutate} = useMutation(['deleteTask'], deleteTask, {onSuccess: () => dispatch(deleteTodo(id.toString()))})
-    const deleteClickHandler = () => {
-        mutate(id)
-        
-    }
+import { deleteTask, editTask } from "../../api/TaskAPI";
+import { useDispatch } from "react-redux";
+import { deleteTodo, editTodo } from "../redux/features/todoSlice";
+import { Modal, Skeleton } from "@mui/material";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+function TaskItem({ task, desc, date, id }) {
+  const [open, setOpen] = useState(false);
+  const [updatedTask, setTask] = useState();
+  const [details, setDetails] = useState();
+  const [Updateddate, setDate] = useState();
+
+  const dispatch = useDispatch();
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const formattedDate = new Date(date).toLocaleDateString("en-US", options);
+  const { mutate } = useMutation(["deleteTask"], deleteTask, {
+    onSuccess: () => dispatch(deleteTodo(id.toString())),
+  });
+  const { mutate: editMutate, isLoading } = useMutation(["editTask"], editTask, {
+    onSuccess: () => dispatch(editTodo({_id: id, title: updatedTask, description: details, dueDate: Updateddate})),
+  });
+
+
+  const deleteClickHandler = () => {
+    mutate(id);
+  };
+
+  const taskClickHandler = () => {
+    setOpen(true);
+  };
+  const taskHandler = (e: any) => {
+    setTask(e.target.value);
+  }
+
+  const formHandler =  async (e: any) => {
+    e.preventDefault();
+    setOpen(false)
+    console.log(updatedTask, details, Updateddate)
+    editMutate({_id: id, title: updatedTask, description: details, dueDate: Updateddate})
+    //const res = await mutateAsync({title: task, description: details, dueDate: date});
+    
+    setTask(undefined);
+    setDetails(undefined);
+    setDate(undefined);
+  }
+
 
   return (
-    <div className='mt-8 px-4 py-6 rounded-md bg-indigo-700 text-white '>
-      <div className='text-xs'>{task}</div>
-      <div className='flex justify-between'>
-        <div className='text-lg'>{desc}</div>
-        <div onClick={deleteClickHandler} className='p-4 rounded-full bg-white border-cyan-200 cursor-pointer'></div>
+    <div className="mt-8 px-4 py-6 rounded-md bg-indigo-700 text-white">
+      {!isLoading && <div className="text-xs">{task}</div>}
+      {isLoading && <Skeleton variant="text" sx={{ bgcolor: 'grey.900', fontSize: '.75rem', width: 0.2 }} />}
+      <div className="flex justify-between">
+        {!isLoading && <div className="text-lg">{desc}</div>}
+        {isLoading && <Skeleton variant="text" sx={{ bgcolor: 'grey.900', fontSize: '.75rem', width: 0.7 }} />}
+        {!isLoading && <div className="flex gap-5 items-center">
+          <div
+            onClick={taskClickHandler}
+          >
+            <FontAwesomeIcon className="cursor-pointer" icon={faPen} />
+          </div>
+          <div
+            onClick={deleteClickHandler}
+            // className="p-2 w-1 h-1 rounded-full bg-white border-red-500 border-2 cursor-pointer"
+          >
+            <FontAwesomeIcon icon={faTrash} className="cursor-pointer text-red"/>
+          </div>
+        </div>}
       </div>
-      <div className='text-xs'>{formattedDate}</div>
+      {!isLoading && <div className="text-xs">{formattedDate}</div>}
+      {isLoading && <Skeleton variant="text" sx={{ bgcolor: 'grey.900', fontSize: '.75rem', width: 0.2 }} />}
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className="bg-white text-center w-2/5 max-w-sm m-auto mt-20 rounded-lg py-4">
+          <h2 className="text-xl">Edit task</h2>
+          <form className="flex flex-col w-4/5 m-auto gap-4">
+          <input onChange={taskHandler} className="border-2 py-2 px-1 rounded" type="text" placeholder="Task"></input>
+          <input onChange={(e: any) => setDetails(e.target.value)} className="border-2 py-2 px-1 rounded" type="text" placeholder="Details"></input>
+          <input onChange={(e: any) => setDate(e.target.value)} className="border-2 py-2 px-1 rounded" type="date" placeholder="Pick a date"></input>
+          <button onClick={formHandler} className="bg-fuchsia-600 rounded text-white py-3">Update Task</button>
+          </form>
+        </div>
+      </Modal>
     </div>
-  )
+  );
 }
 
-export default TaskItem
+export default TaskItem;

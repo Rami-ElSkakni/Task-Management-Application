@@ -33,4 +33,24 @@ const deleteTask = async (id) => {
   }
 };
 
-export { getAllTasks, addTask, deleteTask };
+const editTask = async (details) => {
+  try {
+    const body = {
+      title: details.title,
+      description: details.description,
+      dueDate: details.dueDate
+    }
+    console.log("in edit task",details)
+    const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/${details._id}`, body);
+
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
+  }
+};
+
+ 
+
+export { getAllTasks, addTask, deleteTask, editTask };
